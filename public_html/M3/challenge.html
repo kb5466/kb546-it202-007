@@ -8,13 +8,12 @@
         window.addEventListener("load", () => {
             console.log("loaded via javascript");
             //TODO: add any extra onload processing you may need here
-            // Get all the <li> elements within the <ul>
             var listItems = document.querySelectorAll("nav ul li");
             var links = document.querySelectorAll("nav ul li a");
             function update_pg() {
-                var linkText = this.textContent; // Get the link text
-                document.querySelector("h1").textContent = linkText; // Update <h1>
-                document.title = linkText; // Update <title>
+                var linkText = this.textContent;
+                document.querySelector("h1").textContent = linkText;
+                document.title = linkText;
             }
             for(var i = 0; i<listItems.length;i++)
             {
@@ -64,6 +63,7 @@
             list-style:none;
         }
         h3+ul{
+            background-color: gray;
             & li::before{
             content: '✓ ';
             }
