@@ -10,29 +10,13 @@ reset_session();
     <?php render_input(["type"=>"password", "id"=>"confirm", "name"=>"confirm", "label"=>"Confirm Password", "rules"=>["required"=>true,"minlength"=>8]]);?>
     <?php render_button(["text"=>"Register", "type"=>"submit"]);?>
 </form>
+</div>
 <script>
     function validate(form) {
         //TODO 1: implement JavaScript validation
         //ensure it returns false for an error and true for success
-        let isValid = true;
-        const email = form.email.value;
-        const password = form.password.value;
-        if (email.indexOf("@") > -1) {
-            if (!isValidEmail(email)) {
-                flash("Invalid email", "danger");
-                isValid = false;
-            }
-        } else {
-            if (!isValidUsername(email)) {
-                flash("Username must be lowercase, 3-16 characters, and contain only a-z, 0-9, _ or -", "danger");
-                isValid = false;
-            }
-        }
-        if (!isValidPassword(password)) {
-            flash("Password too short", "danger");
-            isValid = false;
-        }
-        return isValid;
+
+        return true;
     }
 </script>
 <?php
@@ -85,7 +69,7 @@ if (isset($_POST["email"]) && isset($_POST["password"]) && isset($_POST["confirm
         try {
             $stmt->execute([":email" => $email, ":password" => $hash, ":username" => $username]);
             flash("Successfully registered!", "success");
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             users_check_duplicate($e->errorInfo);
         }
     }

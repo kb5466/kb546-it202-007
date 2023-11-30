@@ -14,5 +14,3 @@ function render_table($data = array())
 {
     include(__DIR__ . "/../partials/table.php");
 }
-
-
