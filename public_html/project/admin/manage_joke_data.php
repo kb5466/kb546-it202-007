@@ -108,6 +108,7 @@ function process_jokes($result)
                 }
             }
             array_push($jokes, $record);
+        }
     }
     insert_into_db($db,$jokes,$mappings);
 }
