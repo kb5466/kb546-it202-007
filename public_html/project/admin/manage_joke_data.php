@@ -1,6 +1,5 @@
 <?php
 
-
 //note we need to go up 1 more directory
 require(__DIR__ . "/../../../partials/nav.php");
 if (!has_role("Admin")) {
@@ -10,7 +9,7 @@ if (!has_role("Admin")) {
 
 function insert_into_db($db,$jokes,$mappings)
 {
-    $query = "INSERT INTO `table_jokes` ";
+    $query = "INSERT INTO `jokes` ";
     if(count($jokes)>0){
         $cols = array_keys($jokes[0]);
         $query .= "(" . implode(",", array_map(function ($col) {
@@ -70,7 +69,7 @@ function process_jokes($result)
     $data = $data["data"];
     error_log("data: " . var_export($data, true));
     $db = getDB();
-    $stmt = $db->prepare("SHOW COLUMNS FROM table_jokes");
+    $stmt = $db->prepare("SHOW COLUMNS FROM jokes");
     $stmt->execute();
     $columnsData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -114,15 +113,30 @@ function process_jokes($result)
     }
     insert_into_db($db,$jokes,$mappings);
 }
+$result = [];
 $action = se($_POST, "action", "", false);
 if ($action) {
-    switch ($action) {
-        case "breeds":
+    switch ($action)
+    {
+        case "jokes":
             $result = get("https://punpal-random-joke-generator-api.p.rapidapi.com/random", "API_KEY",[],true, "punpal-random-joke-generator-api.p.rapidapi.com");
             process_jokes($result);
             break;
     }
 }
+$action = se($_GET, "action", "", false);
+if ($action) {
+    
+    switch ($action)
+    {
+        case "jokes":
+            $result = get("https://punpal-random-joke-generator-api.p.rapidapi.com/random", "API_KEY",[],true, "punpal-random-joke-generator-api.p.rapidapi.com");
+            process_jokes($result);
+            break;
+    }
+    
+}
+
 ?>
 <div class="container-fluid">
     <h1>Joke Management</h1>
@@ -132,7 +146,31 @@ if ($action) {
             <form method="POST">
                 <input type="hidden" name="action" value="jokes" />
                 <input type="submit" class="btn btn-primary" value="Refresh jokes" />
+                <br>
+
             </form>
+            <!--<div class="card" style="width:20em;height:350px">-->
+            <div class="card-body">
+             <h5 class="card-title"> 
+             <?php foreach($result as $item) : ?>
+                <?php
+                    if (is_array($item)) {
+                        foreach ($item as $key => $value) {
+
+                        
+                            echo "key: " . $key . "<br>";
+                            echo "value:  " . $value . "<br>"; // Display each value on a new line
+                        }
+                    } else {
+                        echo $item . "<br>"; // Display non-array values directly
+                    }
+                    ?>
+                <?php endforeach; ?></h5>
+                </div>
+
+            
+            <!--</div> -->
         </div>
+
     </div>
 </div>
