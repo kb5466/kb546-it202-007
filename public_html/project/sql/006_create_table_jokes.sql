@@ -1,7 +1,7 @@
-CREATE TABLE t_jokes(
+CREATE TABLE table_jokes(
     `id`    INT,
-    `body`  STRING,
-    `category`  VARCHAR(15),
+    `body`  TEXT,
+    `category`  VARCHAR,
     `rating`    FLOAT,
     PRIMARY KEY (`id`)
 
