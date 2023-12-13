@@ -52,38 +52,13 @@ function insert_into_db($db,$jokes,$mappings)
     }
 }
 
-function process_joke($joke,$columns,$mappings)
-{
-    $record = [];
-    $record["body"] = $joke["body"];
-    $record["category"] = $joke["category"];
-    $record["id"] = $joke["id"];
-    $record["rating"] = $joke["rating"];
-    $record["success"] = $joke["success"];
-
-    foreach($columns as $column){
-        if(in_array($columns, ["id", "api_id", "urls"])){
-            continue;
-        }
-        if(array_key_exists($column,$joke)){
-            $record[$column] = $joke[$column];
-            if(empty($record[$column])){
-                if(str_contains($mappings[$column], "int")){
-                    $record[$column] = "0";
-                }
-            }
-        }
-    }
-    error_log("Record: " . var_export($record, true));
-    return $record;     
-}
-
 function process_jokes($result)
 {
     $status = se($result, "status", 400, false);
     if($status !=200){
         return;
     }
+
     $data_string = html_entity_decode(se($result, "response", "{}", false));
     $wrapper = "{\"data\":$data_string}";
     $data = json_decode($wrapper, true);
@@ -93,10 +68,11 @@ function process_jokes($result)
     $data = $data["data"];
     error_log("data: " . var_export($data, true));
     $db = getDB();
-    $stmt = $db->prepare("SHOW COLUMNS FROM t_jokes");
+    $stmt = $db->prepare("SHOW COLUMNS FROM table_jokes");
     $stmt->execute();
     $columnsData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // Preparing columns and mappings
     $columns = array_column($columnsData, 'Field');
     $mappings = [];
     foreach ($columnsData as $column) {
@@ -105,10 +81,33 @@ function process_jokes($result)
     $ignored = ["id", "created", "modified"];
     $columns = array_diff($columns, $ignored);
 
+    // Proccess joke
     $jokes = [];
-    foreach ($data as $breed) {
-        $record = process_joke($breed, $columns, $mappings);
-        array_push($breeds, $record);
+    foreach ($data as $joke) {
+        if (is_array($joke))
+        {
+            foreach ($joke as $key => $value)
+            {
+                switch ($key)
+                {
+                    case "body":
+                        $record["body"] = $value;
+                        break;
+                    case "category":
+                        $record["category"] = $value;
+                        break;
+                    case "id":
+                        $record["id"] = $value;
+                        break;
+                    case "rating":
+                        $record["rating"] = $value;
+                        break;
+                    default:
+                        // Handle other cases or keys if needed
+                        break;
+                }
+            }
+            array_push($jokes, $record);
     }
     insert_into_db($db,$jokes,$mappings);
 }
@@ -116,7 +115,7 @@ $action = se($_POST, "action", "", false);
 if ($action) {
     switch ($action) {
         case "breeds":
-            $result = get("https://punpal-random-joke-generator-api.p.rapidapi.com/random", "API_KEY");
+            $result = get("https://punpal-random-joke-generator-api.p.rapidapi.com/random", "API_KEY",[],true, "punpal-random-joke-generator-api.p.rapidapi.com");
             process_jokes($result);
             break;
     }
