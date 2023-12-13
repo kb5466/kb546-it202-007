@@ -1,4 +1,6 @@
 <?php
+
+
 //note we need to go up 1 more directory
 require(__DIR__ . "/../../../partials/nav.php");
 if (!has_role("Admin")) {
@@ -97,7 +99,7 @@ function process_jokes($result)
                         $record["category"] = $value;
                         break;
                     case "id":
-                        $record["id"] = $value;
+                        $record["api_id"] = $value;
                         break;
                     case "rating":
                         $record["rating"] = $value;
