@@ -10,6 +10,7 @@ milestone3:https://github.com/kb5466/kb546-it202-007/blob/Milestone3/public_html
 
 video: https://youtu.be/bqdBjUwjm1c
 
+Stuff that I wanted done
 
 Have user login
 Have admins to generate jokes from the api
