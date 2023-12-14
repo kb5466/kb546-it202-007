@@ -17,6 +17,7 @@ if (se($result, "status", 400, false) == 200 && isset($result["response"])) {
                 if (is_array($item)) {
                     foreach ($item as $key => $value) {
 
+                        
                         echo "key: " . $key . "<br>";
                         echo "value:  " . $value . "<br>"; // Display each value on a new line
                     }
